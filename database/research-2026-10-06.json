@@ -1,0 +1,372 @@
+{
+  "id": "official_internships_20261006_v1",
+  "checked_at": "2026-10-06",
+  "scope": "23社の公開公式ページを確認。グループ全子会社やログイン後限定情報の網羅ではない。自動監視・自動更新ではない。",
+  "opportunities": [
+    {
+      "company": "サイバーエージェント",
+      "title": "新規事業実践型インターンシップ",
+      "url": "https://www.cyberagent.co.jp/careers/students/event/detail/id=33828",
+      "eligibility": "eligible",
+      "eligibility_notes": "28〜30卒対象。既卒は2028年3月末時点で卒業後3年未満。",
+      "notes": "アプリ開発を通じた事業づくり。実施期間は2026/12/1〜2027/9/30、応相談。定員到達で早期終了の場合あり。次回締切を登録し、残りの公表済み締切もカレンダーに表示。",
+      "deadline": "2026-10-26T10:00",
+      "opens_at": "",
+      "additional_deadlines": "2026-11-16T10:00,2026-12-07T10:00",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "サイバーエージェント",
+      "title": "Game Planner Camp（Winter）",
+      "url": "https://www.cyberagent.co.jp/careers/students/event/detail/id=33656",
+      "eligibility": "eligible",
+      "eligibility_notes": "2028年4月以降に入社可能な学生。29卒も文面上の対象に含むが、応募フォームは2028年度表記のため登録時に確認。",
+      "notes": "ゲーム・エンタメ企画職向け。マイページ登録だけでなく書類回答が必要。以降の締切も登録。",
+      "deadline": "2026-10-14T10:00",
+      "opens_at": "",
+      "additional_deadlines": "2026-11-04T10:00,2026-11-25T10:00",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "サイバーエージェント",
+      "title": "ゲームプランナー長期インターン（Camp経由）",
+      "url": "https://www.cyberagent.co.jp/careers/students/event/detail/id=33657",
+      "eligibility": "check",
+      "eligibility_notes": "Game Planner Campへの参加・評価後に案内。長期枠の対象卒年は応募先で確認。",
+      "notes": "直接応募の独立した締切は設定しない。まずGame Planner Campへ応募。期間1〜3か月程度、開始日・シフトは相談。Campの締切は別募集に登録済み。",
+      "deadline": "",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "サイバーエージェント",
+      "title": "ゲームイラスト スキルアッププログラム",
+      "url": "https://www.cyberagent.co.jp/careers/students/event/detail/id=33860",
+      "eligibility": "eligible",
+      "eligibility_notes": "2029年4月以降入社可能な29・30卒。作品3点以上またはポートフォリオを提出。",
+      "notes": "イラストレーター向け、約1か月。原則オンライン、実施日は参加決定後に調整。",
+      "deadline": "2026-12-01T09:00",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "サイバーエージェント",
+      "title": "WINTICKET スポーツ領域・機械学習インターン",
+      "url": "https://www.cyberagent.co.jp/careers/students/event/detail/id=33847",
+      "eligibility": "check",
+      "eligibility_notes": "大学・大学院で関連分野を専攻、または相当知識。ページは2028コース表記で29卒可否は未明記。",
+      "notes": "スポーツ映像・データ解析等の技術職。2026/9/20〜。定員到達で締切、締切日は未公表。必要な専門知識は公式要項を参照。",
+      "deadline": "",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "マネーフォワード",
+      "title": "オンラインセールス 長期インターン",
+      "url": "https://hrmos.co/pages/moneyforward/jobs/2171465866329452546",
+      "eligibility": "eligible",
+      "eligibility_notes": "2027年卒以降。1年以上、平日1日4時間以上・月50時間以上の勤務が可能。",
+      "notes": "中小企業向けクラウドサービスのインサイドセールス。募集ページと応募導線を確認。締切日は未掲載。",
+      "deadline": "",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "freee",
+      "title": "インサイドセールス長期インターン（プレエントリー）",
+      "url": "https://jobs.freee.co.jp/entry/newgrads/",
+      "eligibility": "eligible",
+      "eligibility_notes": "公式一覧で27〜30卒対象。具体的な勤務条件はプレエントリーフォームで確認。",
+      "notes": "内定直結型の長期インターンのプレエントリー受付。一般の29卒キャリア登録とは別枠。締切日は未公表。",
+      "deadline": "",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "MIXI",
+      "title": "Dive into MIXI 2026-2027 冬・春季（エンジニア）",
+      "url": "https://mixigroup-recruit.mixi.co.jp/recruitment-category/internship/14368/",
+      "eligibility": "eligible",
+      "eligibility_notes": "2027年4月以降に大学・大学院・専門学校・高専・短大に在籍する学生。エンジニア志望、授業外の開発とGit等の経験。",
+      "notes": "現場チームでの開発。応募導線あり。勤務日程や配属は選考時に確認、締切日は公開ページに記載なし。",
+      "deadline": "",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "GMOインターネットグループ",
+      "title": "1か月就業型インターン（ビジネス職）",
+      "url": "https://recruit.group.gmo/news/detail/180/",
+      "eligibility": "eligible",
+      "eligibility_notes": "全学年対象。個別の就業条件・応募枠は公式マイページで確認。",
+      "notes": "経営に近い実務に取り組む1か月のプログラム。公式採用トップに掲載中。締切・開始日は未公表。",
+      "deadline": "",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "GMOインターネットグループ",
+      "title": "1か月ロボティクスインターン（研究開発職）",
+      "url": "https://recruit.group.gmo/news/detail/181/",
+      "eligibility": "eligible",
+      "eligibility_notes": "大学・大学院・高専の学生、学年・学部不問。研究開発職の詳細条件は公式要項を確認。",
+      "notes": "ロボティクスの研究開発。公式採用トップに掲載中。締切・開始日は未公表。",
+      "deadline": "",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "Sansan",
+      "title": "Sansan R&D Internship",
+      "url": "https://newgradsevents.corp-sansan.com/randd/300001",
+      "eligibility": "eligible",
+      "eligibility_notes": "大学生・大学院生。Python/R等、機械学習・データ解析等の基礎知識、ビジネスレベル以上の日本語。",
+      "notes": "研究開発の就業型インターン。期間2週間〜1か月程度、調整。28卒は本選考との同時進行不可。締切時刻は未公表。",
+      "deadline": "2026-12-31",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "ユーザベース",
+      "title": "28卒ビジネス総合職・2daysインターン（本選考2次）",
+      "url": "https://hrmos.co/pages/uzabase/jobs/Newgrads28_001",
+      "eligibility": "ineligible",
+      "eligibility_notes": "2028年卒対象。書類・1次面接通過者が参加。29卒向けとは確認できない。",
+      "notes": "本選考内の2次選考。10/28〜29、12/22〜23の回が受付中。開催日を応募締切と混同しないため締切欄は空欄。参加予定は選考通過後に登録。",
+      "deadline": "",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "電通 / 電通グループ",
+      "title": "テクノロジーとアイデアの学校（冬・募集開始予定）",
+      "url": "https://www.career.dentsu.jp/recruit/2028/recruit/internship.html",
+      "eligibility": "check",
+      "eligibility_notes": "2028採用サイトに掲載。冬季プログラムの対象卒年・詳細条件は正式公開後に確認。",
+      "notes": "2027年2月頃、7日間の予定。募集開始は11月頃と公表されており、2026年11月の月単位予定として登録。具体的な開始日・締切は未公表。",
+      "deadline": "",
+      "opens_at": "2026-11",
+      "additional_deadlines": "",
+      "recruitment_state": "upcoming",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "KDDI",
+      "title": "アカウンティング＆ファイナンス 1dayインターン",
+      "url": "https://career.kddi.com/internship/",
+      "eligibility": "eligible",
+      "eligibility_notes": "2026年11月時点で大学・大学院・高専に在籍、学年不問。全日程参加可能な方。",
+      "notes": "2026/11/30、東京都内オフィス。経理・財務の仕事体験。簿記等の資格や会計専攻は歓迎条件。",
+      "deadline": "2026-10-18T23:59",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    },
+    {
+      "company": "NTTグループ",
+      "title": "NTT東日本 冬季インターン（オンライン／職場型）",
+      "url": "https://newgrad.ntt-east.co.jp/internship/",
+      "eligibility": "ineligible",
+      "eligibility_notes": "2027年4月〜2028年3月卒業予定者等が対象。29卒対象とは確認できない。",
+      "notes": "NTT東日本の募集。オンライン複数コース・職場体験型の詳細は公式ページ参照。受付9/11〜10/16。締切時刻は未公表。NTTグループ全社共通の募集ではない。",
+      "deadline": "2026-10-16",
+      "opens_at": "",
+      "additional_deadlines": "",
+      "recruitment_state": "open",
+      "checked_at": "2026-10-06",
+      "status": "interested",
+      "priority": "medium"
+    }
+  ],
+  "companies": [
+    {
+      "company": "サイバーエージェント",
+      "result": "受付中を確認",
+      "summary": "新規事業・ゲーム企画・技術・制作系を登録。対象卒年と参加条件は各募集に記載。",
+      "source_url": "https://www.cyberagent.co.jp/careers/students/event/season=2026"
+    },
+    {
+      "company": "DeNA",
+      "result": "新規受付は未確認",
+      "summary": "確認したAIサマーインターンは6/14締切で受付終了。現在の本選考とインターン応募は区別。",
+      "source_url": "https://dena.snar.jp/jobboard/detail.aspx?id=K04JTc5P4Tw9u7FeqWhm7g"
+    },
+    {
+      "company": "Visional / ビズリーチ",
+      "result": "新規受付は未確認",
+      "summary": "28卒ビジネス本選考情報はあるが、現在応募できるインターンとして確認できる募集は未取得。",
+      "source_url": "https://newgrads.visional.inc/jobs/business/2028/entry/"
+    },
+    {
+      "company": "マネーフォワード",
+      "result": "受付中を確認",
+      "summary": "オンラインセールス長期枠を登録。29卒も卒年条件に含む。",
+      "source_url": "https://hrmos.co/pages/moneyforward/jobs/2171465866329452546"
+    },
+    {
+      "company": "freee",
+      "result": "プレエントリー受付",
+      "summary": "27〜30卒向けインサイドセールス長期枠を登録。",
+      "source_url": "https://jobs.freee.co.jp/entry/newgrads/"
+    },
+    {
+      "company": "メルカリ",
+      "result": "受付状況の確認待ち",
+      "summary": "公式求人一覧は動的表示で個別インターンの受付状況を確定できず。未募集と断定せず、公式一覧で再確認。",
+      "source_url": "https://careers.mercari.com/jobs/"
+    },
+    {
+      "company": "LINEヤフー",
+      "result": "確認した募集は終了",
+      "summary": "2026年インターンはエンジニア・ビジネスとも受付終了表示。次回日程は未確認。",
+      "source_url": "https://www.lycorp.co.jp/ja/recruit/newgrads/internship/"
+    },
+    {
+      "company": "MIXI",
+      "result": "受付中を確認",
+      "summary": "冬・春季エンジニア枠を登録。学年と開発経験の条件あり。",
+      "source_url": "https://mixigroup-recruit.mixi.co.jp/recruitment-category/internship/14368/"
+    },
+    {
+      "company": "GMOインターネットグループ",
+      "result": "受付中を確認",
+      "summary": "全学年向け1か月ビジネス職・ロボティクス職を登録。グループ全社の網羅ではない。",
+      "source_url": "https://recruit.group.gmo/"
+    },
+    {
+      "company": "Speee",
+      "result": "確認した日程は終了",
+      "summary": "BizCamは全開催終了表示。ENJINも掲載日程は9/27まで。28卒本選考と区別。",
+      "source_url": "https://newgraduate.speee.jp/biz/internship/?open=enjin"
+    },
+    {
+      "company": "ラクスル",
+      "result": "確認した日程は終了",
+      "summary": "公式BizDev/マーケティング3daysページの開催日は8月・9月。未来の募集として追加していない。",
+      "source_url": "https://raksul-recruit.snar.jp/jobboard/detail.aspx?id=uyRjl4NDs8E"
+    },
+    {
+      "company": "Sansan",
+      "result": "受付中を確認",
+      "summary": "R&D Internshipを登録。ビジネス28卒本選考はインターンとして扱わない。",
+      "source_url": "https://newgradsevents.corp-sansan.com/randd/300001"
+    },
+    {
+      "company": "SmartHR",
+      "result": "確認した募集は終了",
+      "summary": "新卒ビジネスの28卒インターンは募集終了表示。次回開始日は未確認。",
+      "source_url": "https://recruit.smarthr.co.jp/newgrads/business/"
+    },
+    {
+      "company": "ZOZO",
+      "result": "新規受付は未確認",
+      "summary": "確認した28卒ビジネス募集は本選考。現在のインターン受付・次回開始日は未確認。",
+      "source_url": "https://corp.zozo.com/recruit/newgraduate/business-newgraduate2028/"
+    },
+    {
+      "company": "ユーザベース",
+      "result": "28卒向け受付中",
+      "summary": "本選考2次の2days枠を登録。29卒の応募先と混同しないよう対象外表示。",
+      "source_url": "https://hrmos.co/pages/uzabase/jobs/Newgrads28_001"
+    },
+    {
+      "company": "楽天グループ",
+      "result": "新規受付は未確認",
+      "summary": "確認した2026夏募集は締切済み。過年度の冬プログラムを今年の募集とみなしていない。",
+      "source_url": "https://corp.rakuten.co.jp/careers/graduates/internship/2026-summer/"
+    },
+    {
+      "company": "電通 / 電通グループ",
+      "result": "11月頃に募集開始予定",
+      "summary": "冬のテクノロジーとアイデアの学校は2027年2月頃予定。11月のカレンダーに日未定で登録。",
+      "source_url": "https://www.career.dentsu.jp/recruit/2028/recruit/internship.html"
+    },
+    {
+      "company": "博報堂 / 博報堂DYグループ",
+      "result": "確認した募集は終了",
+      "summary": "冬季Business DesignはES等が10/1正午、適性検査が10/2正午締切。開催が未来でも応募受付は終了。",
+      "source_url": "https://hakusuku.jp/recruit/information/internship/2026/winter/business_design/"
+    },
+    {
+      "company": "ソニーグループ",
+      "result": "新規受付は未確認",
+      "summary": "公式の職場密着は募集終了、短期・長期技術枠も受付中を確認できず。Sony Music秋枠も8/26締切済み。",
+      "source_url": "https://www.sony.com/ja/SonyInfo/Jobs/internship/"
+    },
+    {
+      "company": "KDDI",
+      "result": "受付中を確認",
+      "summary": "経理・財務1day枠を登録。他の掲載コースはそれぞれの締切を確認。",
+      "source_url": "https://career.kddi.com/internship/"
+    },
+    {
+      "company": "NTTグループ",
+      "result": "NTT東日本の受付を確認",
+      "summary": "東日本の冬季枠を登録。西日本の確認した秋インターンは締切済み。全グループ会社の網羅ではない。",
+      "source_url": "https://newgrad.ntt-east.co.jp/internship/"
+    },
+    {
+      "company": "ソフトバンク",
+      "result": "新規受付は未確認",
+      "summary": "確認したJOB-MATCH等は夏季募集で締切済み。冬季の開始日は推測せず未登録。",
+      "source_url": "https://www.softbank.jp/recruit/graduate/recruit/internlist/"
+    },
+    {
+      "company": "リクルート",
+      "result": "今年度情報の確認待ち",
+      "summary": "取得できたインターン一覧は2025年度の締切。募集中文字があっても現在の受付と断定しない。",
+      "source_url": "https://www.recruit.co.jp/employment/students/internship/event15.html"
+    }
+  ]
+}

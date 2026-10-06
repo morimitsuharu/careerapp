@@ -1,0 +1,32 @@
+services:
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      DB_DRIVER: mysql
+      DB_HOST: db
+      DB_DATABASE: careerapp
+      DB_USER: careerapp
+      DB_PASSWORD: ${DB_PASSWORD:-local-development-only}
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: careerapp
+      MYSQL_USER: careerapp
+      MYSQL_PASSWORD: ${DB_PASSWORD:-local-development-only}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-local-root-development-only}
+    volumes:
+      - career_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 25
+volumes:
+  career_data:

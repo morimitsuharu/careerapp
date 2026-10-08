@@ -43,6 +43,9 @@ try {
             if ($entity === 'documents') {
                 require_once dirname(__DIR__) . '/src/document_editor.php';
                 saveDocument($id, $input['values']);
+            } elseif ($entity === 'opportunities') {
+                require_once dirname(__DIR__) . '/src/opportunity_editor.php';
+                saveOpportunity($id, $input['values']);
             } else {
             $data = validate($entity, $input['values']);
             if ($id) {

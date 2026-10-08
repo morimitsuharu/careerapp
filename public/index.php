@@ -11,7 +11,7 @@ header('Cache-Control: no-store');
   <title>しおり — 就活ワークスペース</title>
   <meta name="description" content="企業、締切、ES、自分の経験をひとつにつなぐ、あなたの就活ワークスペース。">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/assets/style.css"><script src="/assets/app.js" defer></script>
+  <link rel="stylesheet" href="/assets/style.css?v=<?= filemtime(__DIR__ . '/assets/style.css') ?>"><script src="/assets/lookup.js" defer></script><script src="/assets/app.js" defer></script>
 </head>
 <body>
   <aside class="sidebar">

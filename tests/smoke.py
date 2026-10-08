@@ -34,8 +34,8 @@ def run():
                     raise RuntimeError("Test server did not start")
                 csrf = initial["csrf"]
 
-                def api(payload, expected=200, token=csrf):
-                    req = urllib.request.Request(base + "/api.php", json.dumps(payload).encode(), {"Content-Type": "application/json", "X-CSRF-Token": token})
+                def api(payload, expected=200, token=csrf, path="/api.php"):
+                    req = urllib.request.Request(base + path, json.dumps(payload).encode(), {"Content-Type": "application/json", "X-CSRF-Token": token})
                     try:
                         res = opener.open(req)
                     except urllib.error.HTTPError as error:
@@ -118,6 +118,22 @@ def run():
                 shared = save("documents", {**quick, "title": "別のES", "new_opportunity_title": "別募集"})["data"]
                 assert len(shared["companies"]) == len(created["companies"]), "Same company duplicated"
                 assert opener.open(base + "/assets/app.js").status == 200
+                preview_payload = {"action": "preview", "entity": "opportunities", "url": "https://example.com/job", "text": "応募締切：2099年10月26日 10:00\n学年不問\n募集中"}
+                api(preview_payload, 403, "invalid", path="/lookup.php")
+                preview = api(preview_payload, path="/lookup.php")
+                assert preview["fields"]["deadline"] == "2099-10-26T10:00"
+                api({**preview_payload, "url": "https://127.0.0.1/"}, 422, path="/lookup.php")
+                api({**preview_payload, "text": ["bad"]}, 422, path="/lookup.php")
+                api({"action": "companies", "query": "a"}, 422, path="/lookup.php")
+                inline_opp = {**opp, "company_id": "new", "new_company_name": "募集画面の新企業", "new_company_url": "https://example.com", "title": "公式ページからの募集"}
+                before_inline = json.load(opener.open(base + "/api.php"))["data"]
+                save("opportunities", {**inline_opp, "deadline": "bad-date"}, expected=422)
+                assert len(json.load(opener.open(base + "/api.php"))["data"]["companies"]) == len(before_inline["companies"])
+                after_inline = save("opportunities", inline_opp)["data"]
+                added_company = next(c for c in after_inline["companies"] if c["name"] == "募集画面の新企業")
+                assert added_company["url"] == "https://example.com"
+                assert after_inline["opportunities"][0]["company_id"] == added_company["id"]
+                assert opener.open(base + "/assets/lookup.js").status == 200
                 print("PASS: CRUD, validation, CSRF, submitted ES lock, relationships, persistence, sample data, page/assets")
             finally:
                 server.terminate()

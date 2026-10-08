@@ -12,7 +12,8 @@ const document = {
   addEventListener() {},
 };
 const source = readFileSync(new URL('../public/assets/app.js', import.meta.url), 'utf8');
-const setup = source.slice(0, source.lastIndexOf('request().then(navigate)'));
+const lookupSource = readFileSync(new URL('../public/assets/lookup.js', import.meta.url), 'utf8');
+const setup = lookupSource + '\n' + source.slice(0, source.lastIndexOf('request().then(navigate)'));
 const context = vm.createContext({ document, window: { addEventListener() {} }, location: { hash: '' }, URL, console, setTimeout, clearTimeout, assert });
 vm.runInContext(setup + `
 assert.equal(escapeHTML('<script>"&'), '&lt;script&gt;&quot;&amp;');
@@ -76,5 +77,50 @@ assert.ok(document.querySelector('#editor-fields').innerHTML.includes('自由記
 assert.ok(document.querySelector('#editor-fields').innerHTML.includes('自由記述で経験を追加'));
 assert.ok(document.querySelector('#editor-fields').innerHTML.includes('確認・添削中'));
 assert.ok(documentProgress({status:'reviewing',progress_log:[{from_status:'draft',to_status:'reviewing',created_at:'2026-10-06T10:00:00+09:00',note:'<script>bad</script>'}]},false).includes('&lt;script&gt;'));
+openEditor('companies',1);assert.ok(document.querySelector('#editor-fields').innerHTML.includes('lookup-query'));
+openEditor('opportunities',1);assert.ok(document.querySelector('#editor-fields').innerHTML.includes('opportunity-new-company'));
+assert.ok(document.querySelector('#editor-fields').innerHTML.includes('lookup-root'));
+assert.ok(!lookupMarkup('companies',{name:'<script>',url:'https://example.com'}).includes('<script>'));
+state.companies.push({...state.companies[0],id:2,name:'企業2'});
+state.opportunities.push({...state.opportunities[0],id:2,company_id:2,title:'募集2'});
+state.documents.push({...state.documents[0],id:2,title:'ES2'});
+state.experiences.push({...state.experiences[0],id:2,title:'経験2'});
+const sortedPages = [
+  ['opportunities',renderOpportunities,'募集2','テスト募集'],
+  ['documents',renderDocuments,'ES2','ガクチカ'],
+  ['experiences',renderExperiences,'経験2','開発経験'],
+  ['companies',renderCompanies,'企業2','&lt;script&gt;alert(1)&lt;/script&gt;'],
+];
+for (const [entity,renderer,newer,older] of sortedPages) {
+  assert.ok(renderer().indexOf(newer) < renderer().indexOf(older));
+  sortOrders[entity]='asc';
+  assert.ok(renderer().indexOf(older) < renderer().indexOf(newer));
+  sortOrders[entity]='desc';
+}
+mode='board';
+sortOrders.opportunities='asc';
+assert.ok(renderOpportunities().indexOf('テスト募集') < renderOpportunities().indexOf('募集2'));
+state.opportunities[0].deadline='2099-02-01';
+state.opportunities[0].additional_deadlines='';
+state.opportunities[1].deadline='2099-01-01';
+state.opportunities[1].additional_deadlines='';
+state.opportunities.push({...state.opportunities[0],id:3,title:'過去締切',deadline:'2020-01-01'});
+state.opportunities.push({...state.opportunities[0],id:4,title:'締切未設定',deadline:''});
+sortOrders.opportunities='deadline';
+assert.deepEqual(Array.from(sortItems([...state.opportunities],'opportunities'),item=>item.id),[2,1,3,4]);
+assert.ok(renderOpportunities().indexOf('募集2') < renderOpportunities().indexOf('テスト募集'));
+state.opportunities[0].additional_deadlines='2098-01-01';
+assert.deepEqual(Array.from(sortItems([...state.opportunities],'opportunities'),item=>item.id),[1,2,3,4]);
+state.documents[0].updated_at='2026-11-01T00:00:00+09:00';
+state.documents[1].updated_at='2026-10-01T00:00:00+09:00';
+sortOrders.documents='updated';
+assert.ok(renderDocuments().indexOf('ガクチカ') < renderDocuments().indexOf('ES2'));
+state.companies[0].name='マネーフォワード';
+state.companies[1].name='サイバーエージェント';
+sortOrders.companies='name';
+assert.ok(renderCompanies().indexOf('サイバーエージェント') < renderCompanies().indexOf('マネーフォワード'));
+assert.ok(sortControl('opportunities').includes('締切が近い順'));
+assert.ok(sortControl('documents').includes('最終更新：新しい順'));
+assert.ok(sortControl('companies').includes('企業名順'));
 console.log('PASS: all page renderers, HTML escaping, leap-year calendar, deadline filtering, search, submitted ES duplication');
 `, context);

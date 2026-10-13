@@ -1031,6 +1031,95 @@ tr:last-child td {
     padding:3px 7px
 }
 
+.similar-notice {
+    border:1px solid #e7d5ad;
+    border-radius:8px;
+    background:#fffaf0;
+    margin:14px 0 2px;
+    font-size:11px;
+    color:#73582c
+}
+
+.similar-notice summary {
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:10px 11px;
+    cursor:pointer;
+    list-style:none
+}
+
+.similar-notice summary::-webkit-details-marker {
+    display:none
+}
+
+.similar-mark {
+    display:grid;
+    place-items:center;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:#f0dfb9;
+    font-size:17px;
+    line-height:1
+}
+
+.similar-hint {
+    color:#a08455;
+    font-size:10px;
+    margin-left:auto
+}
+
+.similar-results {
+    border-top:1px solid #efdfbe;
+    padding:7px 11px 11px
+}
+
+.similar-results p {
+    color:#8f7955;
+    font-size:10px;
+    line-height:1.5;
+    margin:4px 0 8px
+}
+
+.similar-results button {
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:2px 6px;
+    text-align:left;
+    width:100%;
+    padding:7px 0;
+    border-top:1px solid #f2e6cc
+}
+
+.similar-results button:hover strong,
+.similar-results button:focus-visible strong {
+    text-decoration:underline
+}
+
+.similar-results button span {
+    grid-row:span 2;
+    padding:2px 5px;
+    border-radius:3px;
+    color:#775d34;
+    background:#f0e0bf;
+    font-size:9px
+}
+
+.similar-results button strong {
+    min-width:0;
+    overflow-wrap:anywhere;
+    font-weight:600
+}
+
+.similar-results button small {
+    min-width:0;
+    overflow-wrap:anywhere;
+    color:#9a8665;
+    font-size:9px
+}
+
 .card-bottom {
     border-top:1px solid var(--line);
     margin-top:auto;

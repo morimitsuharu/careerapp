@@ -86,3 +86,72 @@ function seedInitialCompanies(PDO $pdo): void
         throw $error;
     }
 }
+
+function seedHakuhodoDyOne(PDO $pdo): void
+{
+    $key = 'hakuhodody_one_20261013_v1';
+    $check = $pdo->prepare('SELECT name FROM app_migrations WHERE name = ?');
+    $check->execute([$key]);
+    if ($check->fetchColumn()) return;
+
+    $pdo->beginTransaction();
+    try {
+        $pdo->prepare('INSERT INTO app_migrations (name, applied_at) VALUES (?, ?)')->execute([$key, date('c')]);
+        $companyName = '博報堂DY ONE';
+        $companyUrl = 'https://www.hakuhodody-one.co.jp/';
+        $find = $pdo->prepare('SELECT id, notes FROM companies WHERE name = ? OR url = ? ORDER BY id LIMIT 1');
+        $find->execute([$companyName, $companyUrl]);
+        $existingCompany = $find->fetch();
+        $companyId = $existingCompany['id'] ?? null;
+        $companyNotes = '博報堂DYグループのデジタルコア。DACとアイレップが統合して2024年に設立。データとテクノロジーを活用したマーケティングに注目。';
+        if (!$companyId) {
+            $company = validate('companies', [
+                'name' => $companyName,
+                'category' => '大手広告/デジタル',
+                'industry' => 'デジタルマーケティング・広告・データ',
+                'tags' => '広告,マーケ,企画,データ分析',
+                'url' => $companyUrl,
+                'secondary_url' => 'https://recruit.hakuhodody-one.co.jp/',
+                'notes' => $companyNotes,
+            ]);
+            $companyId = insertRecord('companies', $company);
+        } elseif (in_array($existingCompany['notes'], ['', '29卒の検討候補。分類・主な領域・注目タグは自分の検討メモ。募集の有無・対象卒年は各公式サイトで確認。'], true)) {
+            $pdo->prepare('UPDATE companies SET notes = ? WHERE id = ?')->execute([$companyNotes, (int)$companyId]);
+        }
+
+        $internshipUrl = 'https://recruit.hakuhodody-one.co.jp/recruit/internship/';
+        $find = $pdo->prepare('SELECT id FROM opportunities WHERE company_id = ? AND url = ? LIMIT 1');
+        $find->execute([(int)$companyId, $internshipUrl]);
+        if (!$find->fetchColumn()) {
+            insertRecord('opportunities', validate('opportunities', [
+                'company_id' => (string)$companyId,
+                'title' => '実践型マーケティングインターンシップ（早期選考直結）',
+                'deadline' => '2026-10-11T23:59',
+                'status' => 'interested',
+                'priority' => 'medium',
+                'url' => $internshipUrl,
+                'notes' => '3日間の対面プログラム。顧客課題を題材にグループで提案を作り、現場社員へ発表する。日程は2026/11/24〜26または12/15〜17、会場は赤坂本社。2026/10/13確認時点で応募締切済み。',
+                'recruitment_state' => 'closed',
+                'eligibility' => 'check',
+                'eligibility_notes' => '公式参加条件は国内外の大学・大学院に在籍し、全日程に参加可能な方。29卒の明記はないため応募対象か確認が必要。',
+                'checked_at' => '2026-10-13',
+            ]));
+        }
+
+        $find = $pdo->prepare('SELECT company_id FROM company_research WHERE company_id = ?');
+        $find->execute([(int)$companyId]);
+        if (!$find->fetchColumn()) {
+            $pdo->prepare('INSERT INTO company_research (company_id, checked_at, result, summary, source_url) VALUES (?, ?, ?, ?, ?)')->execute([
+                (int)$companyId,
+                '2026-10-13',
+                '確認した募集は終了',
+                '実践型マーケティングインターンの応募締切は2026/10/11 23:59。次回募集日程は未確認。',
+                $internshipUrl,
+            ]);
+        }
+        $pdo->commit();
+    } catch (Throwable $error) {
+        $pdo->rollBack();
+        throw $error;
+    }
+}

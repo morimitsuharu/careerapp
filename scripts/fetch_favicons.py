@@ -1,4 +1,4 @@
-"""Download icons declared by the 23 official sites; keep source URLs locally."""
+"""Download icons declared by the initial official sites; keep source URLs locally."""
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from hashlib import sha256

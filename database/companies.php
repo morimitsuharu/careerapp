@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-// Classification / fields / interests: user's supplied shortlist (not hiring facts).
-// Official corporate URLs checked on 2026-10-06. See SOURCES.md for provenance.
+// Classification / fields / interests: user's supplied shortlist and later addition (not hiring facts).
+// Official corporate URLs checked on 2026-10-06 and 2026-10-13. See SOURCES.md for provenance.
 return [
     ['サイバーエージェント', 'メガベンチャー', '広告・ゲーム・メディア', '新規事業,企画,広告,ゲーム', 'https://www.cyberagent.co.jp/', ''],
     ['DeNA', 'メガベンチャー', 'ゲーム・エンタメ・IT', '企画,新規事業', 'https://dena.com/jp/', ''],
@@ -27,4 +27,5 @@ return [
     ['NTTグループ', '大企業', '通信・IT・DX', '新規事業,企画', 'https://group.ntt/jp/', ''],
     ['ソフトバンク', '大企業', '通信・IT・AI', '新規事業,事業企画', 'https://www.softbank.jp/corp/', ''],
     ['リクルート', '大企業 / IT', 'HR・販促・Web', '企画,マーケ,事業開発', 'https://www.recruit.co.jp/', ''],
+    ['博報堂DY ONE', '大手広告/デジタル', 'デジタルマーケティング・広告・データ', '広告,マーケ,企画,データ分析', 'https://www.hakuhodody-one.co.jp/', 'https://recruit.hakuhodody-one.co.jp/'],
 ];

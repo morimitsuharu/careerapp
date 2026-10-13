@@ -75,6 +75,42 @@ const tags = (value, colored = false) => String(value || '').split(/[,、]/).map
 }).join('');
 const tagLegend = () => `<div class="tag-legend" aria-label="2ページ共通のタグ色"><span>共通のタグ色</span>${[...tagCategories,{key:'other',label:'その他・未分類'}].map(c=>`<span class="tag tag-${c.key}">${c.label}</span>`).join('')}</div>`;
 
+// Find review candidates without merging or changing any saved ES or experience.
+function similarityIndex() {
+  const entries = [
+    ...state.documents.map(item => ({entity:'documents', item, text:item.body || ''})),
+    ...state.experiences.map(item => ({entity:'experiences', item, text:[item.situation,item.action,item.result,item.learning?.split('\n出典：')[0]].join(' ')})),
+  ].map(entry => {
+    const clean = String(entry.text).normalize('NFKC').toLocaleLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+    return {...entry, grams:new Set(Array.from({length:Math.max(0,clean.length-2)},(_,i)=>clean.slice(i,i+3))), tagSet:new Set(String(entry.item.tags || '').split(/[,、]/).map(tag=>normalizeTag(tag.trim())).filter(Boolean))};
+  });
+  const matches = new Map();
+  for (const entry of entries) {
+    const found = [];
+    for (const other of entries) {
+      if (entry === other) continue;
+      if (entry.entity === 'documents' && other.entity === 'experiences' && Number(entry.item.experience_id) === Number(other.item.id)) continue;
+      if (entry.entity === 'experiences' && other.entity === 'documents' && Number(other.item.experience_id) === Number(entry.item.id)) continue;
+      const sharedTags = [...entry.tagSet].filter(tag=>other.tagSet.has(tag));
+      const small = entry.grams.size <= other.grams.size ? entry.grams : other.grams;
+      const large = small === entry.grams ? other.grams : entry.grams;
+      let sharedGrams = 0;
+      for (const gram of small) if (large.has(gram)) sharedGrams++;
+      const textSimilarity = small.size ? sharedGrams / small.size : 0;
+      if (sharedTags.length < 2 && !(sharedGrams >= 30 && textSimilarity >= 0.42)) continue;
+      found.push({entity:other.entity, item:other.item, sharedTags, score:textSimilarity + sharedTags.length * 0.15});
+    }
+    found.sort((a,b)=>b.score-a.score || Number(b.item.id)-Number(a.item.id));
+    matches.set(`${entry.entity}:${entry.item.id}`,found);
+  }
+  return matches;
+}
+function similarityNotice(index, entity, id) {
+  const found = index.get(`${entity}:${id}`) || [];
+  if (!found.length) return '';
+  return `<details class="similar-notice"><summary><span class="similar-mark" aria-hidden="true">≈</span><strong>似た内容 ${found.length}件</strong><span class="similar-hint">確認する ↗</span></summary><div class="similar-results"><p>文章や共通タグから見つけた候補です。各記録は別々に保存されています。</p>${found.map(match=>`<button type="button" data-action="edit" data-entity="${match.entity}" data-id="${Number(match.item.id)}"><span>${match.entity==='documents'?'ES':'経験'}</span><strong>${escapeHTML(match.item.title)}</strong><small>${match.sharedTags.length ? `共通タグ：${escapeHTML(match.sharedTags.slice(0,2).join('・'))}` : '文章が近い'}</small></button>`).join('')}</div></details>`;
+}
+
 const badge = (status, labels = statusLabels) => `<span class="badge ${escapeHTML(status)}">${escapeHTML(labels[status] || status)}</span>`;
 const matches = (...values) => values.join(' ').toLocaleLowerCase().includes(query.toLocaleLowerCase());
 const editButton = (entity, id, text = '編集') => `<button class="text-button" data-action="edit" data-entity="${entity}" data-id="${id}">${text}</button>`;
@@ -177,11 +213,13 @@ function documentSource(item) {
 }
 function renderDocuments() {
   const items=sortItems(state.documents.filter(d=>matches(d.title,d.question,d.body,d.tags,companyName(opportunity(d.opportunity_id)?.company_id))), 'documents');
-  return heading('ES LIBRARY','あなたの言葉を、育てよう。','過去のESを検索して、次の応募につなげる。提出済みの文章はそのまま保存。','documents','ESを書く') + toolbar(sortControl('documents')) + tagLegend() + (items.length?`<div class="cards">${items.map(d=>`<article class="panel content-card"><div class="card-top"><span class="document-symbol">▧</span><button type="button" class="progress-open" data-action="edit" data-entity="documents" data-id="${d.id}" aria-label="ESの進捗を編集">${badge(d.status,docLabels)}<small>進捗を編集 ↗</small></button></div><small class="muted">${escapeHTML(opportunity(d.opportunity_id)?companyName(opportunity(d.opportunity_id).company_id):'共通のES')}</small><h2>${escapeHTML(d.title)}</h2><p class="excerpt">${escapeHTML(d.body || '本文を追加して、あなたの経験を言葉にしましょう。')}</p>${documentSource(d)}<div class="tags">${tags(d.tags,true)}</div><div class="card-bottom"><span class="${Array.from(d.body).length>d.word_limit?'over-limit':''}">${Array.from(d.body).length} / ${d.word_limit} 文字</span>${editButton('documents',d.id,d.status==='submitted'?'内容を見る ↗':'編集する ↗')}</div></article>`).join('')}</div>`:empty('ESをストックしよう','ガクチカ、自己PR、志望動機。タグで探しやすく整理できます。','documents'));
+  const similar=similarityIndex();
+  return heading('ES LIBRARY','あなたの言葉を、育てよう。','過去のESを検索して、次の応募につなげる。提出済みの文章はそのまま保存。','documents','ESを書く') + toolbar(sortControl('documents')) + tagLegend() + (items.length?`<div class="cards">${items.map(d=>`<article class="panel content-card"><div class="card-top"><span class="document-symbol">▧</span><button type="button" class="progress-open" data-action="edit" data-entity="documents" data-id="${d.id}" aria-label="ESの進捗を編集">${badge(d.status,docLabels)}<small>進捗を編集 ↗</small></button></div><small class="muted">${escapeHTML(opportunity(d.opportunity_id)?companyName(opportunity(d.opportunity_id).company_id):'共通のES')}</small><h2>${escapeHTML(d.title)}</h2>${similarityNotice(similar,'documents',d.id)}<p class="excerpt">${escapeHTML(d.body || '本文を追加して、あなたの経験を言葉にしましょう。')}</p>${documentSource(d)}<div class="tags">${tags(d.tags,true)}</div><div class="card-bottom"><span class="${Array.from(d.body).length>d.word_limit?'over-limit':''}">${Array.from(d.body).length} / ${d.word_limit} 文字</span>${editButton('documents',d.id,d.status==='submitted'?'内容を見る ↗':'編集する ↗')}</div></article>`).join('')}</div>`:empty('ESをストックしよう','ガクチカ、自己PR、志望動機。タグで探しやすく整理できます。','documents'));
 }
 function renderExperiences() {
   const items=sortItems(state.experiences.filter(e=>matches(e.title,e.period,e.situation,e.action,e.result,e.learning,e.tags)), 'experiences');
-  return heading('MY EXPERIENCES','経験のなかに、強みがある。','背景・行動・結果・学びに分けて、ESの素材を整理しよう。','experiences','経験を記録') + toolbar(sortControl('experiences')) + tagLegend() + (items.length?`<div class="cards">${items.map(e=>`<article class="panel content-card"><div class="card-top"><span class="experience-symbol">◇</span><small class="muted">${escapeHTML(e.period)}</small></div><h2>${escapeHTML(e.title)}</h2><p class="excerpt">${escapeHTML(e.learning || e.situation)}</p><div class="tags">${tags(e.tags,true)}</div><div class="card-bottom"><span>${state.documents.filter(d=>Number(d.experience_id)===Number(e.id)).length} 件のESに関連</span>${editButton('experiences',e.id,'振り返る ↗')}</div></article>`).join('')}</div>`:empty('あなたの経験を残そう','開発、学業、アルバイト。日々の気づきから始められます。','experiences'));
+  const similar=similarityIndex();
+  return heading('MY EXPERIENCES','経験のなかに、強みがある。','背景・行動・結果・学びに分けて、ESの素材を整理しよう。','experiences','経験を記録') + toolbar(sortControl('experiences')) + tagLegend() + (items.length?`<div class="cards">${items.map(e=>`<article class="panel content-card"><div class="card-top"><span class="experience-symbol">◇</span><small class="muted">${escapeHTML(e.period)}</small></div><h2>${escapeHTML(e.title)}</h2>${similarityNotice(similar,'experiences',e.id)}<p class="excerpt">${escapeHTML(e.learning || e.situation)}</p><div class="tags">${tags(e.tags,true)}</div><div class="card-bottom"><span>${state.documents.filter(d=>Number(d.experience_id)===Number(e.id)).length} 件のESに関連</span>${editButton('experiences',e.id,'振り返る ↗')}</div></article>`).join('')}</div>`:empty('あなたの経験を残そう','開発、学業、アルバイト。日々の気づきから始められます。','experiences'));
 }
 function renderCompanies() {
   const items=sortItems(state.companies.filter(c=>matches(c.name,c.category,c.industry,c.tags,c.notes)), 'companies');
@@ -237,7 +275,7 @@ function openEditor(entity,id=0,duplicate=false) {
   if(entity==='documents') html=field('title','タイトル *',value.title,'text','required maxlength="200" placeholder="例：学生時代に力を入れたこと"')+documentRelations(value)+'<div id="experience-reference"></div>'+area('question','設問',value.question)+area('body','ES本文',value.body,'class="es-body"')+'<div id="character-count" class="character-count"></div>'+`<div class="field-pair">${field('word_limit','文字数上限 *',value.word_limit||1000,'number','min="1" max="10000" required')}</div>`+field('tags','タグ（カンマ区切り）',value.tags,'text','placeholder="チームワーク,ガクチカ"')+'<p class="hint">文字数の初期上限は1,000文字です。超過しても保存できるため、応募時にご自身で調整してください。文字数は改行・空白を含みます。「提出済み」で保存すると本文の編集をロックします。実際の応募送信は行いません。</p>';
   if(entity==='documents') html=documentSource(value)+html;
   if(entity==='experiences') html=field('title','経験のタイトル *',value.title,'text','required maxlength="200" placeholder="例：夏のハッカソン"')+field('period','時期・期間',value.period,'text','maxlength="200" placeholder="例：大学2年・夏"')+area('situation','背景・課題 — どんな状況だった？',value.situation)+area('action','行動 — 自分が工夫したことは？',value.action)+area('result','結果 — 何が変わった？',value.result)+area('learning','学び・強み — 次に活かせることは？',value.learning)+field('tags','タグ（カンマ区切り）',value.tags,'text','placeholder="課題解決,リーダーシップ,開発"');
-  if(entity==='events') html=field('title','予定名 *',value.title,'text','required maxlength="200"')+`<div class="field-pair">${field('starts_at','日時（日本時間） *',value.starts_at||`${selectedDay||localDay(new Date())}T10:00`,'datetime-local','required')}${select('kind','種類',value.kind||'interview',Object.entries(kindLabels).filter(([key])=>!['deadline','opening'].includes(key)))}</div>`+select('opportunity_id','関連する募集',value.opportunity_id,state.opportunities.map(o=>[o.id,`${companyName(o.company_id)} / ${o.title}`]),true)+area('notes','場所・参加URL・準備すること',value.notes);
+  if(entity==='events') html=field('title','予定名 *',value.title,'text','required maxlength="200"')+`<div class="field-pair">${field('starts_at','日時（日本時間） *',value.starts_at||`${selectedDay||localDay(new Date())}T10:00`,value.starts_at?.length===10?'date':'datetime-local','required')}${select('kind','種類',value.kind||'interview',Object.entries(kindLabels).filter(([key])=>key!=='opening'))}</div>`+`<label class="hint"><input type="checkbox" id="event-date-only" ${value.starts_at?.length===10?'checked':''}> 時刻未定（日付のみ保存）</label>`+select('opportunity_id','関連する募集',value.opportunity_id,state.opportunities.map(o=>[o.id,`${companyName(o.company_id)} / ${o.title}`]),true)+area('notes','場所・参加URL・準備すること',value.notes);
   if(locked) html=`<p class="locked-note">✓ 提出済みの内容を保存しています。修正したいときは複製して編集できます。</p><fieldset disabled>${html}</fieldset><button type="button" class="button" data-action="duplicate" data-id="${id}">複製して編集</button>`;
   if(['companies','opportunities'].includes(entity)&&typeof lookupMarkup==='function')html=lookupMarkup(entity,value)+html;
   if(entity==='documents') html=documentProgress(duplicate?{...value,progress_log:[]}:value,locked)+html;
@@ -257,7 +295,7 @@ function updateReference(){const el=$('#experience-reference'),input=$('[name="e
 $('#editor-form').addEventListener('submit',async event=>{event.preventDefault();const button=$('#save-button');if(button.disabled)return;button.disabled=true;try{await request({action:'save',...editor,values:Object.fromEntries(new FormData(event.target))});$('#editor').close();render();toast('保存しました');}catch(error){$('#form-error').textContent=error.message;}finally{button.disabled=false;}});
 document.addEventListener('input',event=>{if(event.target.id==='search'){query=event.target.value;const position=event.target.selectionStart;render();$('#search').focus();try{$('#search').setSelectionRange(position,position);}catch{}}if(['body','word_limit'].includes(event.target.name))updateCount();});
 document.addEventListener('error',event=>{if(event.target.classList?.contains('company-favicon'))event.target.hidden=true;},true);
-document.addEventListener('change',async event=>{if(event.target.id==='eligibility-filter'){eligibilityFilter=event.target.value;render();}if(event.target.id==='sort-order'){sortOrders[page]=event.target.value;render();}if(event.target.id==='deadline-date-only'){const input=$('[name="deadline"]'),value=input.value;input.type=event.target.checked?'date':'datetime-local';input.value=event.target.checked?value.slice(0,10):value.length===10?value+'T00:00':value;}if(event.target.id==='status-filter'){statusFilter=event.target.value;render();}if(['opportunity_id','experience_id'].includes(event.target.name))updateInlineRelations();if(event.target.name==='experience_id')updateReference();if(event.target.dataset.statusId){const item=opportunity(event.target.dataset.statusId);event.target.disabled=true;try{await request({action:'save',entity:'opportunities',id:item.id,values:{...item,status:event.target.value}});toast('ステータスを更新しました');}catch(error){toast(error.message);}render();}});
+document.addEventListener('change',async event=>{if(event.target.id==='eligibility-filter'){eligibilityFilter=event.target.value;render();}if(event.target.id==='sort-order'){sortOrders[page]=event.target.value;render();}if(['deadline-date-only','event-date-only'].includes(event.target.id)){const input=$(`[name="${event.target.id==='deadline-date-only'?'deadline':'starts_at'}"]`),value=input.value;input.type=event.target.checked?'date':'datetime-local';input.value=event.target.checked?value.slice(0,10):value.length===10?value+'T00:00':value;}if(event.target.id==='status-filter'){statusFilter=event.target.value;render();}if(['opportunity_id','experience_id'].includes(event.target.name))updateInlineRelations();if(event.target.name==='experience_id')updateReference();if(event.target.dataset.statusId){const item=opportunity(event.target.dataset.statusId);event.target.disabled=true;try{await request({action:'save',entity:'opportunities',id:item.id,values:{...item,status:event.target.value}});toast('ステータスを更新しました');}catch(error){toast(error.message);}render();}});
 document.addEventListener('click',async event=>{
   const button=event.target.closest('[data-action]');if(!button)return;
   const {action,entity,id,day}=button.dataset;

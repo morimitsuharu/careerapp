@@ -122,5 +122,26 @@ assert.ok(renderCompanies().indexOf('サイバーエージェント') < renderCo
 assert.ok(sortControl('opportunities').includes('締切が近い順'));
 assert.ok(sortControl('documents').includes('最終更新：新しい順'));
 assert.ok(sortControl('companies').includes('企業名順'));
+state.events = [{id:1,opportunity_id:1,title:'Web適性検査の締切',starts_at:'2026-10-25',kind:'deadline',notes:''}];
+openEditor('events',1);
+assert.ok(document.querySelector('#editor-fields').innerHTML.includes('name="starts_at" type="date"'));
+assert.ok(document.querySelector('#editor-fields').innerHTML.includes('id="event-date-only" checked'));
+assert.ok(document.querySelector('#editor-fields').innerHTML.includes('<option value="deadline" selected>締切</option>'));
+state.documents = [
+  {id:10,title:'購買体験 Q1',body:'ランニングシューズを友人と販売員に相談して選んだ。'.repeat(4),tags:'ランニングシューズ,購買体験',experience_id:20,word_limit:1000,status:'submitted'},
+  {id:11,title:'購買体験 Q2',body:'ランニングシューズを友人と販売員に相談して選んだ。'.repeat(3),tags:'ランニングシューズ,購買体験',experience_id:21,word_limit:1000,status:'submitted'},
+  {id:12,title:'別の話題',body:'音楽ライブの演出について考えた。',tags:'音楽ライブ',experience_id:null,word_limit:1000,status:'submitted'},
+];
+state.experiences = [
+  {id:20,title:'購入時の選択',situation:'ランニングシューズの購入',action:'友人に相談',result:'選び直した',learning:'納得した',tags:'ランニングシューズ,購買体験'},
+  {id:21,title:'情報の接点',situation:'ランニングシューズの購入',action:'販売員に相談',result:'選び直した',learning:'接点の重要性',tags:'ランニングシューズ,購買体験'},
+];
+const similarDocs = renderDocuments(), similarExperiences = renderExperiences();
+assert.ok(similarDocs.includes('似た内容 2件'));
+assert.ok(similarDocs.includes('data-entity="documents" data-id="11"'));
+assert.ok(similarExperiences.includes('似た内容'));
+assert.ok(!similarityIndex().get('documents:10').some(match=>match.entity==='experiences'&&match.item.id===20));
+state.documents[1].title='<img src=x onerror=alert(1)>';
+assert.ok(!renderDocuments().includes('<img src=x'));
 console.log('PASS: all page renderers, HTML escaping, leap-year calendar, deadline filtering, search, submitted ES duplication');
 `, context);

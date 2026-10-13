@@ -9,24 +9,31 @@ function check(bool $ok, string $message): void { if (!$ok) throw new RuntimeExc
 try {
     $legacy = new PDO('sqlite:' . $path);
     $legacy->exec("CREATE TABLE companies (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(200) NOT NULL, industry VARCHAR(200) NOT NULL DEFAULT '', url TEXT NOT NULL, notes TEXT NOT NULL)");
-    $legacy->exec("INSERT INTO companies (name, industry, url, notes) VALUES ('サイバーエージェント', '自分の分類', '', '大事な企業研究'), ('自分で追加した企業', '', '', '残す')");
+    $legacy->exec("INSERT INTO companies (name, industry, url, notes) VALUES ('サイバーエージェント', '自分の分類', '', '大事な企業研究'), ('自分で追加した企業', '', '', '残す'), ('博報堂DY ONE', '', '', '自分の応募メモ')");
     require dirname(__DIR__) . '/src/bootstrap.php';
     $data = snapshot();
-    check(count($data['companies']) === 24, 'Expected 23 initial companies plus one existing company');
-    check(count(array_unique(array_column($data['companies'], 'name'))) === 24, 'Duplicate companies');
+    check(count($data['companies']) === 25, 'Expected 24 initial companies plus one existing company');
+    check(count(array_unique(array_column($data['companies'], 'name'))) === 25, 'Duplicate companies');
     check($data['companies'][0]['notes'] === '大事な企業研究' && $data['companies'][0]['industry'] === '自分の分類', 'Existing data overwritten');
     check($data['companies'][0]['url'] === 'https://www.cyberagent.co.jp/', 'Missing URL not filled');
+    $dyOne = array_values(array_filter($data['companies'], fn($item) => $item['name'] === '博報堂DY ONE'))[0];
+    check($dyOne['notes'] === '自分の応募メモ', 'Existing company memo overwritten');
     $expected = require dirname(__DIR__) . '/database/companies.php';
     foreach ($expected as [$name, $category, $industry, $tags, $url, $secondary]) {
         $row = array_values(array_filter($data['companies'], fn($item) => $item['name'] === $name))[0];
         check($row['category'] === $category && $row['tags'] === $tags && $row['url'] === $url && $row['secondary_url'] === $secondary, 'Incorrect seed data: ' . $name);
     }
-    check(!$data['opportunities'] && !$data['documents'] && !$data['events'], 'Invented application records');
+    check(count($data['opportunities']) === 1 && $data['opportunities'][0]['deadline'] === '2026-10-11T23:59', 'Verified internship missing');
+    check($data['opportunities'][0]['recruitment_state'] === 'closed' && $data['opportunities'][0]['eligibility'] === 'check', 'Expired internship status is inaccurate');
+    check(!$data['documents'] && !$data['events'], 'Invented application records');
+    db()->exec('DELETE FROM opportunities WHERE id = ' . (int)$data['opportunities'][0]['id']);
+    seedHakuhodoDyOne(db());
+    check((int)db()->query('SELECT COUNT(*) FROM opportunities')->fetchColumn() === 0, 'Deleted internship restored');
     db()->exec("DELETE FROM companies WHERE name = 'DeNA'");
     $fresh = new PDO('sqlite:' . $path, null, null, [PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
     migrateCompanies($fresh);
-    check((int)$fresh->query('SELECT COUNT(*) FROM companies')->fetchColumn() === 23, 'Deleted company restored');
+    check((int)$fresh->query('SELECT COUNT(*) FROM companies')->fetchColumn() === 24, 'Deleted company restored');
     check((int)$fresh->query("SELECT COUNT(*) FROM companies WHERE name = 'DeNA'")->fetchColumn() === 0, 'Deleted seed reappeared');
-    check((int)$fresh->query('SELECT COUNT(*) FROM app_migrations')->fetchColumn() === 1, 'Migration duplicated');
-    echo "PASS: legacy schema upgrade, 23-company seed, preserved edits, source URLs, no duplicate or restored company, no invented applications\n";
+    check((int)$fresh->query('SELECT COUNT(*) FROM app_migrations')->fetchColumn() === 2, 'Migration duplicated');
+    echo "PASS: legacy schema upgrade, 24-company seed, verified internship, preserved edits, source URLs, no duplicate or restored company\n";
 } finally { unlink($path); }

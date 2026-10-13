@@ -31,6 +31,7 @@
 | 21 | NTTグループ | [公式サイト](https://group.ntt/jp/) | — |
 | 22 | ソフトバンク | [公式サイト](https://www.softbank.jp/corp/) | — |
 | 23 | リクルート | [公式サイト](https://www.recruit.co.jp/) | — |
+| 24 | 博報堂DY ONE | [公式サイト](https://www.hakuhodody-one.co.jp/) | [新卒採用サイト](https://recruit.hakuhodody-one.co.jp/) |
 
 ## 確認方法と限界
 
@@ -40,4 +41,5 @@
 - MIXI・Speeeのトップページは直接取得が一部失敗したため、公式サイトの検索結果および [MIXI会社概要](https://mixi.co.jp/company/profile/)・[Speee会社概要](https://speee.jp/company)も参照しています。
 - 博報堂DYホールディングスは [公式会社概要](https://www.hakuhodody-holdings.co.jp/group/outline/)を確認しました。リクルートは直接取得が403のため、[公式サイトの検索結果](https://www.recruit.co.jp/newsroom/pressrelease/search.html)でドメインと企業名を確認しました。
 - Visional／ビズリーチ、電通／電通グループ、博報堂／博報堂DYグループはユーザーの候補単位を保持し、両公式サイトを登録しています。グループと事業会社の採用窓口が同一とは限りません。
+- 博報堂DY ONEは2026-10-13に追加した博報堂DYグループの別会社です。[会社情報](https://recruit.hakuhodody-one.co.jp/company/)と[インターン情報](https://recruit.hakuhodody-one.co.jp/recruit/internship/)を確認し、博報堂本体の企業ノートとは分けて登録しています。
 - URLは企業編集画面から変更可能です。編集後のリンクを自動で公式認定する機能はありません。

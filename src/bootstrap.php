@@ -29,6 +29,7 @@ function db(): PDO
     migrateCompanies($pdo);
     migrateResearch($pdo);
     migrateDocumentSources($pdo);
+    if (getenv('APP_SKIP_INITIAL_COMPANIES') !== '1') seedHakuhodoDyOne($pdo);
     return $pdo;
 }
 
@@ -88,7 +89,7 @@ function validate(string $entity, array $input): array
         $data['word_limit'] = (int)$data['word_limit'];
         $data['updated_at'] = date('c');
     }
-    if ($entity === 'events' && !in_array($data['kind'], ['interview', 'briefing', 'internship', 'other'], true)) throw new InvalidArgumentException('予定の種類が正しくありません。');
+    if ($entity === 'events' && !in_array($data['kind'], ['deadline', 'interview', 'briefing', 'internship', 'other'], true)) throw new InvalidArgumentException('予定の種類が正しくありません。');
     return $data;
 }
 

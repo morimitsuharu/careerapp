@@ -8,6 +8,7 @@ const docLabels = {draft:'下書き', reviewing:'確認・添削中', revising:'
 const eligibilityLabels = {eligible:'29卒：卒年条件に含む', check:'29卒：要確認', ineligible:'29卒：対象外'};
 const recruitmentLabels = {open:'確認時は受付中', upcoming:'募集開始予定', unknown:'受付状況未確認', closed:'受付終了'};
 let eligibilityFilter = '';
+let opportunityBucket = 'current';
 const kindLabels = {opening:'募集開始', deadline:'締切', briefing:'説明会', interview:'面接', internship:'インターン', other:'その他'};
 let state = {companies:[], opportunities:[], documents:[], experiences:[], events:[]};
 let csrf = '', page = 'dashboard', query = '', statusFilter = '', mode = 'list', editor = null, pendingDelete = null;
@@ -28,7 +29,13 @@ const dateLabel = (value, time = false) => {
 };
 const deadlineTime = value => new Date(value.length === 10 ? value + 'T23:59:59+09:00' : value + '+09:00');
 const deadlineDates = item => [...new Set([item.deadline, ...(item.additional_deadlines || '').split(',').map(v=>v.trim())].filter(Boolean))].sort();
-const nextDeadline = item => deadlineDates(item).find(v=>deadlineTime(v)>=new Date()) || deadlineDates(item).at(-1) || '';
+const nextDeadline = (item, now = new Date()) => deadlineDates(item).find(v=>deadlineTime(v)>=now) || deadlineDates(item).at(-1) || '';
+const appliedStatuses = new Set(['applied', 'screening', 'interview', 'accepted']);
+function opportunityBucketFor(item, now = new Date()) {
+  const deadline = nextDeadline(item, now);
+  if (!deadline || deadlineTime(deadline) >= now) return 'current';
+  return appliedStatuses.has(item.status) ? 'applied' : 'expired';
+}
 function recruitmentInfo(item) {
   const source = siteURL(item.url);
   return `<div class="recruitment-info">${item.recruitment_state ? badge(item.recruitment_state,recruitmentLabels) : ''}${item.eligibility ? badge(item.eligibility,eligibilityLabels) : ''}${item.checked_at ? `<small>${escapeHTML(item.checked_at)} 確認</small>` : ''}${source ? `<a href="${escapeHTML(source.href)}" target="_blank" rel="noopener noreferrer">公式募集 ↗</a>` : ''}</div>`;
@@ -197,9 +204,15 @@ function renderDashboard() {
     (!Object.values(state).some(rows => rows.length) ? '<div class="sample-note"><span>使い方をイメージしたいときは、架空の企業・ESの記入例を追加できます。</span><button class="text-button" data-action="sample">サンプルを試す →</button></div>' : '');
 }
 function renderOpportunities() {
-  const items = sortItems(state.opportunities.filter(o => matches(o.title, companyName(o.company_id), o.notes) && (!statusFilter || o.status === statusFilter) && (!eligibilityFilter || o.eligibility === eligibilityFilter)), 'opportunities');
+  const filtered = state.opportunities.filter(o => matches(o.title, companyName(o.company_id), o.notes) && (!statusFilter || o.status === statusFilter) && (!eligibilityFilter || o.eligibility === eligibilityFilter));
+  const buckets = {current:[], expired:[], applied:[]};
+  const now = new Date();
+  filtered.forEach(item => buckets[opportunityBucketFor(item, now)].push(item));
+  const items = sortItems(buckets[opportunityBucket], 'opportunities');
+  const bucketTabs = `<div class="opportunity-tabs" role="group" aria-label="募集の締切と応募状況">${[['current','期限内・未設定'],['expired','締切済み'],['applied','応募済みかつ締切済み']].map(([key,label])=>`<button type="button" aria-pressed="${opportunityBucket===key}" class="${opportunityBucket===key?'selected':''}" data-action="opportunity-bucket" data-bucket="${key}">${label}<span class="tab-count">${buckets[key].length}</span></button>`).join('')}</div>`;
   return heading('OPPORTUNITIES','出会いを、次のステップへ。','公式情報を2026/10/6に確認。受付状況は確認時点のものです。卒年以外の条件は募集詳細へ。','opportunities','募集を登録') + toolbar(`<select id="eligibility-filter" aria-label="29卒の応募条件で絞り込み"><option value="">すべての対象卒年</option>${Object.entries(eligibilityLabels).map(([v,l])=>`<option value="${v}" ${eligibilityFilter===v?'selected':''}>${l}</option>`).join('')}</select><select id="status-filter" aria-label="選考状況で絞り込み"><option value="">すべてのステータス</option>${Object.entries(statusLabels).map(([v,l]) => `<option value="${v}" ${statusFilter===v?'selected':''}>${l}</option>`).join('')}</select>${sortControl('opportunities')}<div class="segmented"><button data-action="list" class="${mode==='list'?'selected':''}">一覧</button><button data-action="board" class="${mode==='board'?'selected':''}">ボード</button></div>`) +
-    (mode === 'board' ? `<p class="hint">カード内の選択欄からステータスを変更できます。</p><div class="board">${Object.entries(statusLabels).map(([key,label]) => `<section class="board-column"><h3>${label}<span>${items.filter(o=>o.status===key).length}</span></h3>${items.filter(o=>o.status===key).map(o=>`<article class="board-card"><div class="company-cell">${companyIcon(company(o.company_id))}<small>${escapeHTML(companyName(o.company_id))}</small></div><button class="card-title" data-action="edit" data-entity="opportunities" data-id="${o.id}">${escapeHTML(o.title)}</button>${recruitmentInfo(o)}${due(o)}<select data-status-id="${o.id}" aria-label="${escapeHTML(o.title)}のステータス">${Object.entries(statusLabels).map(([v,l])=>`<option value="${v}" ${v===key?'selected':''}>${l}</option>`).join('')}</select></article>`).join('')}</section>`).join('')}</div>` : `<section class="panel">${items.length ? opportunityTable(items) : empty('募集が見つかりません','新しく登録するか、検索条件を変えてみてください。','opportunities')}</section>`);
+    bucketTabs +
+    (mode === 'board' ? `<p class="hint">カード内の選択欄からステータスを変更できます。</p><div class="board">${Object.entries(statusLabels).map(([key,label]) => `<section class="board-column"><h3>${label}<span>${items.filter(o=>o.status===key).length}</span></h3>${items.filter(o=>o.status===key).map(o=>`<article class="board-card"><div class="company-cell">${companyIcon(company(o.company_id))}<small>${escapeHTML(companyName(o.company_id))}</small></div><button class="card-title" data-action="edit" data-entity="opportunities" data-id="${o.id}">${escapeHTML(o.title)}</button>${recruitmentInfo(o)}${due(o)}<select data-status-id="${o.id}" aria-label="${escapeHTML(o.title)}のステータス">${Object.entries(statusLabels).map(([v,l])=>`<option value="${v}" ${v===key?'selected':''}>${l}</option>`).join('')}</select></article>`).join('')}</section>`).join('')}</div>` : `<section class="panel">${items.length ? opportunityTable(items) : empty('このタブに募集はありません','検索や絞り込み条件を変えると、ほかの募集を確認できます。')}</section>`);
 }
 function renderCalendar() {
   const start = new Date(month.getFullYear(),month.getMonth(),1), offset = start.getDay();
@@ -298,13 +311,14 @@ document.addEventListener('error',event=>{if(event.target.classList?.contains('c
 document.addEventListener('change',async event=>{if(event.target.id==='eligibility-filter'){eligibilityFilter=event.target.value;render();}if(event.target.id==='sort-order'){sortOrders[page]=event.target.value;render();}if(['deadline-date-only','event-date-only'].includes(event.target.id)){const input=$(`[name="${event.target.id==='deadline-date-only'?'deadline':'starts_at'}"]`),value=input.value;input.type=event.target.checked?'date':'datetime-local';input.value=event.target.checked?value.slice(0,10):value.length===10?value+'T00:00':value;}if(event.target.id==='status-filter'){statusFilter=event.target.value;render();}if(['opportunity_id','experience_id'].includes(event.target.name))updateInlineRelations();if(event.target.name==='experience_id')updateReference();if(event.target.dataset.statusId){const item=opportunity(event.target.dataset.statusId);event.target.disabled=true;try{await request({action:'save',entity:'opportunities',id:item.id,values:{...item,status:event.target.value}});toast('ステータスを更新しました');}catch(error){toast(error.message);}render();}});
 document.addEventListener('click',async event=>{
   const button=event.target.closest('[data-action]');if(!button)return;
-  const {action,entity,id,day}=button.dataset;
+  const {action,entity,id,day,bucket}=button.dataset;
   if(action==='new')openEditor(entity);
   if(action==='edit')openEditor(entity,id);
   if(action==='close')$('#editor').close();
   if(action==='duplicate')openEditor('documents',id,true);
   if(action==='delete'){pendingDelete={entity,id:Number(id)};$('#confirm-description').textContent=entity==='opportunities'?'募集を削除します。関連するES・予定は残りますが、この募集とのひもづけは解除されます。':'この操作は取り消せません。削除前に必要な内容を書き出してください。';$('#confirm-dialog').showModal();}
   if(['list','board'].includes(action)){mode=action;render();}
+  if(action==='opportunity-bucket' && Object.hasOwn({current:1,expired:1,applied:1},bucket)){opportunityBucket=bucket;render();}
   if(['prev-month','next-month','today'].includes(action)){month=action==='today'?new Date(new Date().getFullYear(),new Date().getMonth(),1):new Date(month.getFullYear(),month.getMonth()+(action==='next-month'?1:-1),1);selectedDay='';render();}
   if(action==='day'){selectedDay=day;render();}
   if(action==='clear-day'){selectedDay='';render();}

@@ -11,7 +11,7 @@ header('Cache-Control: no-store');
   <title>しおり — 就活ワークスペース</title>
   <meta name="description" content="企業、締切、ES、自分の経験をひとつにつなぐ、あなたの就活ワークスペース。">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/assets/style.css?v=<?= filemtime(__DIR__ . '/assets/style.css') ?>"><script src="/assets/lookup.js" defer></script><script src="/assets/app.js" defer></script>
+  <link rel="stylesheet" href="/assets/style.css?v=<?= filemtime(__DIR__ . '/assets/style.css') ?>"><script src="/assets/lookup.js?v=<?= filemtime(__DIR__ . '/assets/lookup.js') ?>" defer></script><script src="/assets/app.js?v=<?= filemtime(__DIR__ . '/assets/app.js') ?>" defer></script>
 </head>
 <body>
   <aside class="sidebar">
@@ -19,6 +19,11 @@ header('Cache-Control: no-store');
     <div class="workspace"><span class="avatar">Me</span><div>自分のワークスペース<small>一歩ずつ、自分らしく。</small></div></div>
     <p class="nav-label">WORKSPACE</p>
     <nav id="nav" aria-label="メインメニュー"></nav>
+    <div id="company-view-switcher" class="company-view-switcher" aria-label="企業ノートの表示" hidden>
+      <p class="nav-label">企業ノートの表示</p>
+      <button id="company-view-cards" type="button" data-action="company-view" data-view="cards" aria-pressed="true">▦　通常の一覧</button>
+      <button id="company-view-orbit" type="button" data-action="company-view" data-view="orbit" aria-pressed="false">◎　3Dで眺める</button>
+    </div>
     <div class="sidebar-bottom"><div class="plant">✳</div><strong>経験は、未来のヒント。</strong><p>小さな気づきも、<br>あなたの言葉で残そう。</p><button class="text-button" data-action="new" data-entity="experiences">経験を記録する <span>↗</span></button></div>
     <button class="export-button" data-action="export">↓ データを書き出す <span>JSON</span></button>
     <p class="local-note">個人用 · このサーバーに保存</p>

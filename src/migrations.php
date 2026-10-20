@@ -13,6 +13,12 @@ function migrateDocumentSources(PDO $pdo): void
     }
 }
 
+function migrateOpportunityProgress(PDO $pdo): void
+{
+    $id = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql' ? 'INTEGER PRIMARY KEY AUTO_INCREMENT' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
+    $pdo->exec("CREATE TABLE IF NOT EXISTS opportunity_progress (id $id, opportunity_id INTEGER NOT NULL, from_status VARCHAR(30) NOT NULL, to_status VARCHAR(30) NOT NULL, note TEXT NOT NULL, occurred_at VARCHAR(30) NOT NULL, created_at VARCHAR(30) NOT NULL, FOREIGN KEY (opportunity_id) REFERENCES opportunities(id) ON DELETE CASCADE)");
+}
+
 function validResearchDate(string $value, bool $allowMonth = false, bool $dateOnly = false): bool
 {
     $formats = $dateOnly ? ['Y-m-d'] : ['Y-m-d', 'Y-m-d\TH:i'];

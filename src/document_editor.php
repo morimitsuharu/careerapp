@@ -18,10 +18,24 @@ function saveDocument(int $id, array $values): void
         if(!is_string($note)||mb_strlen($note)>2000) throw new InvalidArgumentException('進捗メモは2000文字以内で入力してください。');
         $note=trim($note);
         if($existing && $existing['status']==='submitted'){
-            foreach(FIELDS['documents'] as $field){
-                if(array_key_exists($field,$values) && (string)$values[$field] !== (string)$existing[$field]) throw new InvalidArgumentException('提出済みの内容は保存されています。修正する場合は「複製して編集」を使ってください。');
+            foreach($values as $field=>$value){
+                if(!in_array($field,['opportunity_id','tags','status','progress_note'],true)) throw new InvalidArgumentException('提出済みの本文・設問・経験は変更できません。修正する場合は「複製して編集」を使ってください。');
             }
-            if(!empty($values['new_opportunity_title'])||!empty($values['new_experience_title'])) throw new InvalidArgumentException('提出済みの関連項目は変更できません。');
+            if(($values['status']??'submitted')!=='submitted') throw new InvalidArgumentException('提出済みの状態は変更できません。');
+            $opportunityId=$values['opportunity_id']??$existing['opportunity_id'];
+            if($opportunityId==='') $opportunityId=null;
+            if($opportunityId!==null){
+                if(!ctype_digit((string)$opportunityId)||(int)$opportunityId<1) throw new InvalidArgumentException('応募先の募集を選択してください。');
+                $q=$pdo->prepare('SELECT id FROM opportunities WHERE id=?');$q->execute([(int)$opportunityId]);
+                if(!$q->fetchColumn()) throw new InvalidArgumentException('応募先の募集が見つかりません。');
+                $opportunityId=(int)$opportunityId;
+            }
+            $tags=$values['tags']??$existing['tags'];
+            if(!is_string($tags)||mb_strlen($tags)>2000) throw new InvalidArgumentException('タグは2000文字以内で入力してください。');
+            $tags=trim($tags);
+            if((string)($existing['opportunity_id']??'')!==(string)($opportunityId??'')||$existing['tags']!==$tags){
+                $pdo->prepare('UPDATE documents SET opportunity_id=?, tags=?, updated_at=? WHERE id=?')->execute([$opportunityId,$tags,date('c'),$id]);
+            }
             $data=$existing;
         }else{
             // Related records and the ES are committed together; failed saves leave no orphan records.

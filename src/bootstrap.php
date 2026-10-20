@@ -29,6 +29,7 @@ function db(): PDO
     migrateCompanies($pdo);
     migrateResearch($pdo);
     migrateDocumentSources($pdo);
+    migrateOpportunityProgress($pdo);
     if (getenv('APP_SKIP_INITIAL_COMPANIES') !== '1') seedHakuhodoDyOne($pdo);
     return $pdo;
 }
@@ -116,6 +117,10 @@ function snapshot(): array
         $row['favicon_source_url'] = $icon['source_url'] ?? '';
         $row['research'] = $research[$row['id']] ?? null;
     }
+    unset($row);
+    $opportunityProgress = [];
+    foreach (db()->query('SELECT * FROM opportunity_progress ORDER BY occurred_at DESC, id DESC')->fetchAll() as $entry) $opportunityProgress[$entry['opportunity_id']][] = $entry;
+    foreach ($data['opportunities'] as &$row) $row['progress_log'] = $opportunityProgress[$row['id']] ?? [];
     unset($row);
     $progress = [];
     foreach (db()->query('SELECT * FROM document_progress ORDER BY id DESC')->fetchAll() as $entry) $progress[$entry['document_id']][] = $entry;

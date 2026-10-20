@@ -121,7 +121,7 @@ async function performLookup(action,button) {
   finally{button.disabled=false;}
 }
 document.addEventListener('click',event=>{const button=event.target.closest('[data-lookup]');if(button)performLookup(button.dataset.lookup,button);});
-document.addEventListener('input',event=>{
+function handleLookupInput(event){
   if(event.target.id==='lookup-query'){
     lookupVersion++;lookupController?.abort();lookupCandidates=[];document.querySelector('#lookup-candidates').innerHTML='';
     refreshLookupSearch();clearTimeout(lookupTimer);
@@ -131,7 +131,11 @@ document.addEventListener('input',event=>{
     document.querySelector('#lookup-query').value=event.target.value;
   }
   if(['name','title','new_company_name'].includes(event.target.name))refreshLookupSearch();
-});
+}
+const lookupComposing=new WeakSet();
+document.addEventListener('compositionstart',event=>{if(event.target.id==='lookup-query'||['name','new_company_name'].includes(event.target.name))lookupComposing.add(event.target);});
+document.addEventListener('compositionend',event=>{if(lookupComposing.has(event.target)){lookupComposing.delete(event.target);handleLookupInput(event);}});
+document.addEventListener('input',event=>{if(!lookupComposing.has(event.target)&&!event.isComposing)handleLookupInput(event);});
 document.addEventListener('change',event=>{
   if(event.target.name==='company_id'&&editor?.entity==='opportunities'){
     toggleNewOpportunityCompany();const c=company(event.target.value);
